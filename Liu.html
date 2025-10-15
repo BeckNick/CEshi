@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>留言板 | 分享你的想法</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
+        }
+        
+        body {
+            background-color: #f5f7fa;
+            color: #333;
+            line-height: 1.6;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding: 20px;
+            background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+            color: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+        
+        .tagline {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+        
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 30px;
+        }
+        
+        @media (max-width: 768px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        .message-form {
+            background: white;
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #555;
+        }
+        
+        input, textarea {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 16px;
+            transition: all 0.3s;
+        }
+        
+        input:focus, textarea:focus {
+            outline: none;
+            border-color: #6a11cb;
+            box-shadow: 0 0 0 2px rgba(106, 17, 203, 0.2);
+        }
+        
+        textarea {
+            min-height: 120px;
+            resize: vertical;
+        }
+        
+        button {
+            background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            transition: all 0.3s;
+            width: 100%;
+        }
+        
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .message-list {
+            background: white;
+            border-radius: 10px;
+            padding: 25px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+            max-height: 600px;
+            overflow-y: auto;
+        }
+        
+        .message-card {
+            border-bottom: 1px solid #eee;
+            padding: 20px 0;
+            display: flex;
+            gap: 15px;
+        }
+        
+        .message-card:last-child {
+            border-bottom: none;
+        }
+        
+        .avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 20px;
+            flex-shrink: 0;
+        }
+        
+        .message-content {
+            flex: 1;
+        }
+        
+        .message-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+        }
+        
+        .author {
+            font-weight: 600;
+            color: #333;
+        }
+        
+        .timestamp {
+            color: #888;
+            font-size: 0.9rem;
+        }
+        
+        .message-text {
+            color: #555;
+            margin-bottom: 10px;
+        }
+        
+        .delete-btn {
+            background: #ff4757;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            width: auto;
+        }
+        
+        .delete-btn:hover {
+            background: #ff3742;
+            transform: none;
+            box-shadow: none;
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 40px 0;
+            color: #888;
+        }
+        
+        .empty-state i {
+            font-size: 3rem;
+            margin-bottom: 15px;
+            display: block;
+            color: #ddd;
+        }
+        
+        footer {
+            text-align: center;
+            margin-top: 40px;
+            color: #888;
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>留言板</h1>
+            <p class="tagline">分享你的想法，留下你的足迹</p>
+        </header>
+        
+        <div class="main-content">
+            <section class="message-form">
+                <h2>发布留言</h2>
+                <form id="messageForm">
+                    <div class="form-group">
+                        <label for="author">姓名</label>
+                        <input type="text" id="author" placeholder="请输入您的姓名" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="message">留言内容</label>
+                        <textarea id="message" placeholder="请输入您的留言..." required></textarea>
+                    </div>
+                    
+                    <button type="submit">发布留言</button>
+                </form>
+            </section>
+            
+            <section class="message-list">
+                <h2>留言列表</h2>
+                <div id="messagesContainer">
+                    <!-- 留言将通过JavaScript动态添加 -->
+                    <div class="empty-state">
+                        <i>💬</i>
+                        <p>暂无留言，快来发布第一条吧！</p>
+                    </div>
+                </div>
+            </section>
+        </div>
+        
+        <footer>
+            <p>© 2023 留言板 | 设计制作</p>
+        </footer>
+    </div>
+
+    <script>
+        // 获取DOM元素
+        const messageForm = document.getElementById('messageForm');
+        const authorInput = document.getElementById('author');
+        const messageInput = document.getElementById('message');
+        const messagesContainer = document.getElementById('messagesContainer');
+        
+        // 从localStorage加载留言或初始化空数组
+        let messages = JSON.parse(localStorage.getItem('messages')) || [];
+        
+        // 显示所有留言
+        function displayMessages() {
+            if (messages.length === 0) {
+                messagesContainer.innerHTML = `
+                    <div class="empty-state">
+                        <i>💬</i>
+                        <p>暂无留言，快来发布第一条吧！</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            messagesContainer.innerHTML = '';
+            messages.forEach((message, index) => {
+                const messageElement = document.createElement('div');
+                messageElement.className = 'message-card';
+                
+                // 获取姓名的首字母作为头像
+                const firstLetter = message.author.charAt(0).toUpperCase();
+                
+                // 格式化时间
+                const date = new Date(message.timestamp);
+                const formattedDate = `${date.getFullYear()}-${(date.getMonth()+1).toString().padStart(2, '0')}-${date.getDate().toString().padStart(2, '0')} ${date.getHours().toString().padStart(2, '0')}:${date.getMinutes().toString().padStart(2, '0')}`;
+                
+                messageElement.innerHTML = `
+                    <div class="avatar">${firstLetter}</div>
+                    <div class="message-content">
+                        <div class="message-header">
+                            <span class="author">${message.author}</span>
+                            <span class="timestamp">${formattedDate}</span>
+                        </div>
+                        <div class="message-text">${message.text}</div>
+                        <button class="delete-btn" data-index="${index}">删除</button>
+                    </div>
+                `;
+                
+                messagesContainer.appendChild(messageElement);
+            });
+            
+            // 添加删除按钮事件监听
+            document.querySelectorAll('.delete-btn').forEach(button => {
+                button.addEventListener('click', function() {
+                    const index = parseInt(this.getAttribute('data-index'));
+                    deleteMessage(index);
+                });
+            });
+        }
+        
+        // 添加新留言
+        function addMessage(author, text) {
+            const newMessage = {
+                author: author,
+                text: text,
+                timestamp: new Date().toISOString()
+            };
+            
+            messages.unshift(newMessage); // 添加到数组开头
+            localStorage.setItem('messages', JSON.stringify(messages));
+            displayMessages();
+        }
+        
+        // 删除留言
+        function deleteMessage(index) {
+            if (confirm('确定要删除这条留言吗？')) {
+                messages.splice(index, 1);
+                localStorage.setItem('messages', JSON.stringify(messages));
+                displayMessages();
+            }
+        }
+        
+        // 表单提交事件
+        messageForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const author = authorInput.value.trim();
+            const message = messageInput.value.trim();
+            
+            if (author && message) {
+                addMessage(author, message);
+                
+                // 重置表单
+                messageForm.reset();
+                
+                // 显示成功提示
+                alert('留言发布成功！');
+            }
+        });
+        
+        // 初始化显示留言
+        displayMessages();
+    </script>
+</body>
+</html>
